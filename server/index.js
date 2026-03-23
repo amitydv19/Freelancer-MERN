@@ -3,7 +3,6 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes.js';
 import freelancerRoutes from './routes/freelancerRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
@@ -11,6 +10,11 @@ import applicationRoutes from './routes/applicationRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import mongoose from "mongoose";
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB Connected"))
+.catch((err) => console.log("DB connection error:", err));
 
 const app = express();
 app.use(express.json());
