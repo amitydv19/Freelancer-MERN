@@ -111,7 +111,6 @@ const GeneralContextProvider = ({ children }) => {
   const showToast = (type, title, message) => {
     const id = Date.now()
     setToasts(prev => [...prev, { id, type, title, message, hiding: false }])
-    // Auto remove after 4s with slide-out animation
     setTimeout(() => {
       setToasts(prev => prev.map(t => t.id === id ? { ...t, hiding: true } : t))
       setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 350)
@@ -125,31 +124,49 @@ const GeneralContextProvider = ({ children }) => {
 
   // ── LOGIN ──
   const login = async () => {
-    try {
-      const { data } = await api.post('/auth/login', { email, password })
+  try {
+    const { data } = await api.post('/auth/login', { email, password })
 
-      localStorage.setItem('userId',   data._id)
-      localStorage.setItem('usertype', data.usertype)
-      localStorage.setItem('username', data.username)
-      localStorage.setItem('email',    data.email)
-
-      showToast('success', 'Welcome back!', `Signed in as ${data.username}`)
-      setTimeout(() => navigate(`/${data.usertype}`), 800)
-    } catch (error) {
-      const msg = error?.response?.data?.msg
-      if (msg === 'User does not exist') {
-        showToast('error', 'Account not found', 'No account with this email. Please sign up first.')
-      } else if (msg === 'Invalid credentials') {
-        showToast('error', 'Wrong password', 'The password you entered is incorrect. Please try again.')
-      } else {
-        showToast('error', 'Login failed', 'Something went wrong. Please check your connection.')
-      }
-      console.error(error)
+    if (!data || !data.token) {
+      showToast('error', 'Login failed', 'Invalid response from server.')
+      return false
     }
+
+    localStorage.setItem('userId',   data._id)
+    localStorage.setItem('usertype', data.usertype)
+    localStorage.setItem('username', data.username)
+    localStorage.setItem('email',    data.email)
+    localStorage.setItem('token',    data.token)
+
+    showToast('success', 'Welcome back!', `Signed in as ${data.username}`)
+    setTimeout(() => navigate(`/${data.usertype}`), 800)
+    return true
+
+  } catch (error) {
+  const msg = error?.response?.data?.msg || error?.response?.data?.error || ''
+
+  if (msg.includes('duplicate') || msg.includes('E11000')) {
+    showToast('error', 'Email already exists', 'An account with this email already exists. Try logging in.')
+  } else if (error?.response?.status === 409) {
+    showToast('error', 'Email already exists', 'An account with this email already exists. Try logging in.')
+  } else if (error?.response?.status === 400 && msg === 'User already exists') {
+    showToast('error', 'Email already exists', 'An account with this email already exists. Try logging in.')
+  } else {
+    // Temporarily show the actual error so we can debug
+    showToast('error', 'Registration failed', msg || 'Something went wrong. Please try again.')
   }
 
+  console.error('Register error:', error)
+}
+}
   // ── REGISTER ──
   const register = async () => {
+    // ✅ Frontend validation before hitting the API
+    if (!username || !email || !password || !usertype) {
+      showToast('warning', 'Missing fields', 'Please fill in all fields and select a role.')
+      return
+    }
+
     try {
       const { data } = await api.post('/auth/register', { username, email, password, usertype })
 
@@ -157,19 +174,23 @@ const GeneralContextProvider = ({ children }) => {
       localStorage.setItem('usertype', data.usertype)
       localStorage.setItem('username', data.username)
       localStorage.setItem('email',    data.email)
+      localStorage.setItem('token',    data.token)
 
       showToast('success', 'Account created!', `Welcome to SB Works, ${data.username}!`)
       setTimeout(() => navigate(`/${data.usertype}`), 800)
+
     } catch (error) {
-      const msg = error?.response?.data?.error || ''
+      const msg = error?.response?.data?.error || error?.response?.data?.msg || ''
+
       if (msg.includes('duplicate') || msg.includes('E11000')) {
         showToast('error', 'Email already exists', 'An account with this email already exists. Try logging in.')
-      } else if (!username || !email || !password || !usertype) {
-        showToast('warning', 'Missing fields', 'Please fill in all fields and select a role.')
+      } else if (error?.response?.status === 409) {
+        showToast('error', 'Email already exists', 'An account with this email already exists. Try logging in.')
       } else {
         showToast('error', 'Registration failed', 'Something went wrong. Please try again.')
       }
-      console.error(error)
+
+      console.error('Register error:', error)
     }
   }
 

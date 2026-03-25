@@ -9,8 +9,10 @@ const Navbar = () => {
   const { logout } = useContext(GeneralContext)
   const [open, setOpen] = useState(false)
 
-  const usertype = localStorage.getItem('usertype')
-  if (!usertype) return null
+  // safer usertype
+  const usertype = localStorage.getItem("usertype")
+
+if (usertype) return null
 
   const navLinks = {
     freelancer: [
@@ -32,6 +34,9 @@ const Navbar = () => {
     ]
   }
 
+  // prevent map crash
+  const links = navLinks[usertype] || []
+
   return (
     <div className="w-full flex justify-center mt-4 px-4">
       <nav className="bg-white shadow-md rounded-full w-full max-w-6xl px-6 py-3">
@@ -49,7 +54,7 @@ const Navbar = () => {
 
           {/* DESKTOP LINKS */}
           <div className="hidden md:flex items-center gap-2">
-            {navLinks[usertype].map((item) => {
+            {links.map((item) => {
               const isActive = location.pathname === item.path
               return (
                 <button
@@ -89,7 +94,7 @@ const Navbar = () => {
         {/* MOBILE MENU */}
         {open && (
           <div className="md:hidden mt-4 flex flex-col gap-2">
-            {navLinks[usertype].map((item) => {
+            {links.map((item) => {
               const isActive = location.pathname === item.path
               return (
                 <button

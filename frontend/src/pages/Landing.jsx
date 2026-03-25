@@ -317,11 +317,30 @@ const Landing = () => {
   const scrollTo    = (ref) => ref.current?.scrollIntoView({ behavior: 'smooth' })
 
   useEffect(() => {
-    const role = localStorage.getItem('usertype')
-    if (role === 'freelancer') navigate('/freelancer')
-    else if (role === 'client') navigate('/client')
-    else if (role === 'admin')  navigate('/admin')
-  }, [navigate])
+  const role  = localStorage.getItem("usertype")
+  const token = localStorage.getItem("token")
+  const userId = localStorage.getItem("userId")
+
+  // ✅ Only redirect if ALL three exist and are non-empty
+  if (!token || !role || !userId) {
+    localStorage.clear() // clear any partial/stale data
+    return
+  }
+
+  const routes = {
+    freelancer: "/freelancer",
+    client: "/client",
+    admin: "/admin",
+  }
+
+  const destination = routes[role]
+
+  if (destination) {
+    navigate(destination)
+  } else {
+    localStorage.clear()
+  }
+}, [])
 
   return (
     <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", background: '#fff' }}>
@@ -343,8 +362,12 @@ const Landing = () => {
                 onMouseEnter={e => e.target.style.color = '#2563eb'}
                 onMouseLeave={e => e.target.style.color = '#475569'}>
                 {label}
+
+
+          
               </button>
             ))}
+            
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button className="btn-ghost" onClick={() => navigate('/authenticate')}>Log In</button>

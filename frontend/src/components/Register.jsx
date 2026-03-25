@@ -378,7 +378,7 @@ const Register = ({ setAuthType }) => {
               : <><span>Create Account</span><IconArrow /></>
             }
           </button>
-        </form>
+          </form>
 
         {/* Divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>

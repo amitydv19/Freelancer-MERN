@@ -26,11 +26,13 @@ import 'react-toastify/dist/ReactToastify.css'
 
 // Pages that have their OWN navbar built in — hide the global one
 const NO_NAVBAR_ROUTES = [
+  '/',             // ← add this
   '/authenticate',
-  '/freelancer',   // covers /freelancer, /freelancer/all-projects, etc.
+  '/freelancer',
   '/client',
   '/new-project',
   '/project-applications',
+  '/client-project',   // ← this was also missing!
   '/admin',
   '/admin-projects',
   '/admin-applications',

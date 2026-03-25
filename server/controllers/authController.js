@@ -1,60 +1,55 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { User } from '../models/Schema.js';
+import bcrypt from "bcrypt";
+import { User } from "../models/Schema.js";
 
-// ✅ REGISTER
-export const register = async (req, res) => {
+export const registerUserController = async (req, res) => {
   try {
     const { username, email, password, usertype } = req.body;
 
-    // Check existing user
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'Email already registered' });
+    if (existingUser) {
+      return res.status(400).json({ msg: "User already exists" });
+    }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
 
-    // Save user
-    const user = new User({ username, email, password: hashedPassword, usertype });
+    const user = new User({ username, email, password: hashPassword, usertype });
     await user.save();
 
-    res.status(201).json({ message: '✅ Registered successfully' });
-  } catch (err) {
-    res.status(500).json({ message: '❌ Server error', error: err.message });
+    res.status(201).json({
+      _id:      user._id,
+      username: user.username,
+      email:    user.email,
+      usertype: user.usertype,
+      token:    user._id.toString(),
+    });
+
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
 };
 
-// ✅ LOGIN
-export const login = async (req, res) => {
+export const loginUserController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // User dhundo
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user)
+      return res.status(404).json({ msg: "User does not exist" });
 
-    // Password match karo
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid password' });
+    if (!isMatch)
+      return res.status(401).json({ msg: "Invalid credentials" });
 
-    // JWT token banao
-    const token = jwt.sign(
-      { id: user._id, username: user.username, usertype: user.usertype },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    );
-
-    res.json({
-      message: '✅ Login successful',
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        usertype: user.usertype
-      }
+    res.status(200).json({
+      _id:      user._id,
+      username: user.username,
+      email:    user.email,
+      usertype: user.usertype,
+      token:    user._id.toString(),
     });
-  } catch (err) {
-    res.status(500).json({ message: '❌ Server error', error: err.message });
+
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
 };

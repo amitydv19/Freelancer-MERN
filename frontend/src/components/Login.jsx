@@ -2,6 +2,7 @@ import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GeneralContext } from '../context/GeneralContext'
 
+
 /* ── SVG Icons ─────────────────────────────────────────── */
 const IconMail = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -265,11 +266,11 @@ const Login = ({ setAuthType }) => {
   const [showPwd, setShowPwd]            = useState(false)
 
   const handleLogin = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    await login()
-    setLoading(false)
-  }
+  e.preventDefault();
+  setLoading(true);
+  await login();
+  setLoading(false);  // ← this runs even on failure, which is fine
+};
 
   return (
     <div className="lw lw-page">
@@ -481,6 +482,7 @@ const Login = ({ setAuthType }) => {
 
         </div>
       </div>
+      
 
       {/* Footer */}
       <p style={{ position:'relative', zIndex:1, textAlign:'center',
