@@ -17,7 +17,7 @@ import aiRoutes from './routes/aiRoutes.js';
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:5173",
+  "https://freelancer-mern-backend.onrender.com",
   "https://freelancer-lilac-eight.vercel.app"
 ];
 

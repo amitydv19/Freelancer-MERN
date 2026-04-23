@@ -22,30 +22,17 @@ const userSchema = mongoose.Schema({
 
 const freelancerSchema = mongoose.Schema({
     userId: String,
-    skills: {
-        type: Array,
-        default: []
-    },
-    description: {
-        type: String,
-        default: ""
-    },
-    currentProjects: {
-        type: Array,
-        default: []
-    },
-    completedProjects: {
-        type: Array,
-        default: []
-    },
-    applications: {
-        type: Array,
-        default: []
-    },
-    funds: {
-        type: Number,
-        default: 0
-    },
+    skills: { type: Array, default: []},
+
+    description: { type: String, default: "" },
+
+    currentProjects: { type: Array, default: [] },
+
+    completedProjects: { type: Array, default: [] },
+
+    applications: { type: Array, default: [] },
+    
+    funds: { type: Number, default: 0 },
 })
 
 
