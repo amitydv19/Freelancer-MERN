@@ -17,8 +17,12 @@ import aiRoutes from './routes/aiRoutes.js';
 const app = express();
 
 const allowedOrigins = [
-  "https://freelancer-mern-backend.onrender.com",
-  "https://freelancer-lilac-eight.vercel.app"
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "https://freelancer-lilac-eight.vercel.app",
+  "https://freelancer-mern-backend.onrender.com"
 ];
 
 // ✅ CORS must come FIRST, before any other middleware
