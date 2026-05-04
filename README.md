@@ -38,6 +38,7 @@ _**Features**_
         MongoDB with Mongoose
   
 **_Folder Structure_**
+
       Freelancer-MERN/
       │
       ├── client/        # Frontend (React)
