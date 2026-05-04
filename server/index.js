@@ -16,19 +16,23 @@ import aiRoutes from './routes/aiRoutes.js';
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "http://localhost:5174",
-  "http://localhost:5175",
-  "https://freelancer-lilac-eight.vercel.app",
-  "https://freelancer-mern-backend.onrender.com"
-];
-
 // ✅ CORS must come FIRST, before any other middleware
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+
+    // Allow all origins for development flexibility
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+
+    // In production, allow specific origins
+    const allowedOrigins = [
+      "https://freelancer-mern-backend.onrender.com"
+    ];
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
